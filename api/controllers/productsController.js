@@ -50,14 +50,16 @@ module.exports = {
     },
     updateById: function (req, res, next) {
         productModel.findByIdAndUpdate(req.params.productId, {
-            id: req.body._id,
-            productID: req.body.productID,
-            websiteID: req.body.websiteID,
-            productUID: req.body.productUID,
-            productName: req.body.productName,
-            productImage: req.body.productImage,
-            productURL: req.body.productURL,
-            productSKU: req.body.productSKU
+           // id: req.body._id,
+           name: req.body.name,
+           price: req.body.price,
+           qty: req.body.qty,
+           tax: req.body.tax,
+           imageUrl: req.body.imageUrl,
+           featured: req.body.featured,
+           barcode: req.body.barcode,
+           category: req.body.category,
+           active: req.body.active,
         }, function (err, productInfo) {
             if (err)
                 next(err);
