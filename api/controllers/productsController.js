@@ -1,6 +1,8 @@
 const productModel = require('../models/productsModel');
 var mongoose = require('mongoose');
 
+
+
 module.exports = {
     getById: function (req, res, next) {
         console.log(req.body);
@@ -34,12 +36,7 @@ module.exports = {
                         active: 1
                     }
                 }
-                //,
-                // {
-                //     $sort: {
-                //         createTime: -1
-                //     }
-                // }
+
             ], function (err, products) {
                 if (err)
                     next(err);
@@ -49,22 +46,34 @@ module.exports = {
         )
     },
     updateById: function (req, res, next) {
-        productModel.findByIdAndUpdate(req.params.productId, {
-           // id: req.body._id,
-           name: req.body.name,
-           price: req.body.price,
-           qty: req.body.qty,
-           tax: req.body.tax,
-           imageUrl: req.body.imageUrl,
-           featured: req.body.featured,
-           barcode: req.body.barcode,
-           category: req.body.category,
-           active: req.body.active,
-        }, function (err, productInfo) {
+        if (req.file)
+            var imageUrl = req.file.filename
+        else
+            var imageUrl = req.body.imageUrl
+
+
+        pModel = {
+            name: req.body.name,
+            price: req.body.price,
+            qty: req.body.qty,
+            tax: req.body.tax,
+           // imageUrl: req.body.imageUrl,
+            featured: req.body.featured,
+            barcode: req.body.barcode,
+            category: req.body.category,
+            active: req.body.active,
+
+            imageUrl: imageUrl
+
+        }
+        productModel.findOneAndUpdate({
+            _id: req.params.productId,
+            websiteID: req.user.websiteID
+        }, pModel, { new: true }, function (err, result) {
             if (err)
                 next(err);
             else
-                res.json({ status: "success", message: "Product updated successfully!!!", data: null });
+                res.json({ result });
         });
     },
     deleteById: function (req, res, next) {
@@ -82,11 +91,12 @@ module.exports = {
             price: req.body.price,
             qty: req.body.qty,
             tax: req.body.tax,
-            imageUrl: req.body.imageUrl,
             featured: req.body.featured,
             barcode: req.body.barcode,
             category: req.body.category,
             active: req.body.active,
+
+            imageUrl: req.file.filename,
 
             websiteID: req.user.websiteID
 
@@ -94,8 +104,7 @@ module.exports = {
             if (err)
                 next(err);
             else
-                res.json({  result });
+                res.json({ result });
         });
-      //  res.json({ status: "success", message: "Product added successfully!!!" });
     },
 }

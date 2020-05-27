@@ -22,8 +22,9 @@ app.use('/API', cors())
 //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 //   next();
 // });
-//set "public" folder for serving static files
-app.use(express.static(path.join(__dirname, 'public')));
+//set "uploads" folder for serving static files
+//app.use(express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static('uploads'));
 
 
 //var jwt = require('jsonwebtoken');

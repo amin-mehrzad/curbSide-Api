@@ -9,12 +9,12 @@ const ProductSchema = new Schema({
     },
     name: {
         type: String,
-        trim: true,
+       // trim: true,
       //  required: true,
     },
     price: {
         type: Number,
-        required: true,
+      //  required: true,
        // lowercase: true
     },
     qty: {
@@ -23,12 +23,12 @@ const ProductSchema = new Schema({
       //  required: true,
     },
     tax: {
-        type: Boolean,
+        type: String,
         trim: true,
        // required: true,
     },
     featured: {
-        type: Boolean,
+        type: String,
         trim: true,
       //  required: true,
     },
@@ -43,7 +43,7 @@ const ProductSchema = new Schema({
       //  required: true,
     },
     active: {
-        type: Boolean,
+        type: String,
         trim: true,
       //  required: true,
     },
@@ -51,6 +51,9 @@ const ProductSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Website'
     },
-
+    // productImage: {
+    //    type: String,
+    //    // required: true 
+    //   }
 },{strict:false});
 module.exports = mongoose.model('Product', ProductSchema)
