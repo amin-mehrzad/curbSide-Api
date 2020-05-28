@@ -96,7 +96,7 @@ module.exports = {
             category: req.body.category,
             active: req.body.active,
 
-            imageUrl: req.file.filename,
+            imageUrl:     req.file ? req.file.filename : req.body.imageUrl ,
 
             websiteID: req.user.websiteID
 

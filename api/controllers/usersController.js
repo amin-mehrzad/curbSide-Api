@@ -7,8 +7,9 @@ const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 module.exports = {
     create: function (req, res, next) {
+        console.log(req.body)
         encryptedPass = bcrypt.hashSync(req.body.password, saltRounds);
-        userModel.create({ name: req.body.name, email: req.body.email, password: encryptedPass }, function (err, result) {
+        userModel.create({ firstName: req.body.firstName,lastName: req.body.lastName, email: req.body.email, password: encryptedPass }, function (err, result) {
             if (err)
                 next(err);
             else {

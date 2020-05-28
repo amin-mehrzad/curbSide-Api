@@ -35,7 +35,7 @@ module.exports = {
                 if (err)
                     next(err);
                 else
-                    res.json({ status: "success", message: "Category list found!!!", data: categories });
+                    res.status(200).json({ status: "success", message: "Category list found!!!", data: categories });
             }
         )
     },
