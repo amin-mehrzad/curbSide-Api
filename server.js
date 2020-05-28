@@ -55,6 +55,7 @@ const scopes = require('./routes/scopesRoute');
 const users = require('./routes/usersRoute');
 const customers = require('./routes/customersRoute');
 const products = require('./routes/productsRoute');
+const categories = require('./routes/categoriesRoute');
 const websites = require('./routes/websitesRoute');
 
 
@@ -83,9 +84,8 @@ app.use('/API',passport.authenticate('jwt',{session:false}))
 app.use('/API/scopes', scopes);
 app.use('/API/customers', customers);
 app.use('/API/products', products);
+app.use('/API/categories', categories);
 app.use('/API/websites', websites);
-
-
 
 
 
