@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../api/controllers/usersController');
 var permissions = require('express-jwt-permissions')();
-
-router.get('/', permissions.check([['users:read'],['admin']]) , userController.usersList);
-router.get('/:userId', permissions.check( [['users:read'],['admin']]) , userController.user);
+router.put('/', permissions.check([['users:read','users:write'],['admin']]) , userController.editUser);
+router.get('/', permissions.check([['users:read'],['admin']]) , userController.user);
+//router.get('/:userId', permissions.check( [['users:read'],['admin']]) , userController.user);
 router.delete('/:userId', permissions.check( [['users:read', 'users:write'],['admin']]), userController.deleteUser);
 
 router.post('/register', userController.create);

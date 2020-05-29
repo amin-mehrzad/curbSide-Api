@@ -32,17 +32,17 @@ const WebsiteSchema = new Schema({
     trim: true,
     //  required: true,
   },
-  websiteEmailPassword: {
-    type: String,
-    trim: true,
+  phone: {
+    type: Number,
+   // trim: true,
     //  required: true,
   },
-  websiteEmailService: {
+  state: {
     type: String,
-    trim: true,
+   // trim: true,
     //   required: true
   },
-  websiteURL: {
+  country: {
     type: String,
     trim: true,
     //   required: true,
@@ -51,22 +51,22 @@ const WebsiteSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Scopes'
   },
-  websiteStatus: {
+  businessEmail: {
     type: String,
     trim: true,
     //   required: true
   },
-  websiteGooglePage: {
+  businessAddress: {
     type: String,
+   // trim: true
+  },
+  businessPhone: {
+    type: Number,
     trim: true
   },
-  websiteFacebookPage: {
+  businessName: {
     type: String,
-    trim: true
-  },
-  websiteYelpPage: {
-    type: String,
-    trim: true
+    //trim: true
   }
 });
 module.exports = mongoose.model('Website', WebsiteSchema)

@@ -65,7 +65,11 @@ app.get('/', function (req, res) {
 
 
 // public route
-app.use('/API/users', users);
+app.use('/users', users, (req, res) => {
+  if (req.method != "POST")
+    res.status(401).json({ "message": "Unuathorized User!!" })
+});
+
 
 // athenticate root API route 
 //app.use('/API', jwtAuthentication({ secret: 'nodeRestApi'}).unless({ path: [{ url: /\/API\/users/, methods: ['POST'] }] }));
@@ -76,11 +80,12 @@ app.use(passport.initialize());
 require("./config/passport")(passport);
 
 
-app.use('/API',passport.authenticate('jwt',{session:false}))
+app.use('/API', passport.authenticate('jwt', { session: false }))
 // Routes
 
 
 // private route
+app.use('/API/users', users);
 app.use('/API/scopes', scopes);
 app.use('/API/customers', customers);
 app.use('/API/products', products);
@@ -114,9 +119,9 @@ app.use(function (err, req, res, next) {
       message: err.message,
       name: err.name,
       code: err.code,
-      details:{
+      details: {
         name: err.inner.name,
-        expiredAt:err.inner.expiredAt
+        expiredAt: err.inner.expiredAt
       }
     });
   else if (err.status === 404)

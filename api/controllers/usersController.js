@@ -9,7 +9,7 @@ module.exports = {
     create: function (req, res, next) {
         console.log(req.body)
         encryptedPass = bcrypt.hashSync(req.body.password, saltRounds);
-        userModel.create({ firstName: req.body.firstName,lastName: req.body.lastName, email: req.body.email, password: encryptedPass }, function (err, result) {
+        userModel.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email, password: encryptedPass }, function (err, result) {
             if (err)
                 next(err);
             else {
@@ -32,7 +32,7 @@ module.exports = {
     authenticate: function (req, res, next) {
         //  console.log(req);
 
-        userModel.findOne({ email: new RegExp(`^${req.body.email}$`, 'i')})
+        userModel.findOne({ email: new RegExp(`^${req.body.email}$`, 'i') })
             .populate({ path: 'websiteID', populate: { path: 'scopeID', model: 'Scopes' } })
             .exec(function (joinErr, userInfo) {
                 if (joinErr) {
@@ -53,12 +53,12 @@ module.exports = {
                             }, req.app.get('refreshTokenSecretKey'), { expiresIn: 8640000 });
                             res.json({ status: "success", message: "user found!!!", data: { user: userInfo.email, token: token, refreshToken: refreshToken } });
                         } else {
-                            res.status(401).json({ passwordincorrect:true ,password:['Password not found']});
-                           // res.status(401).json({ passwordincorrect:true ,password:'Password not found'});
+                            res.status(401).json({ passwordincorrect: true, password: ['Password not found'] });
+                            // res.status(401).json({ passwordincorrect:true ,password:'Password not found'});
                         }
                     } else {
-                        res.status(401).json({ email:['Email not found'] ,emailnotfound:true } );
-                       // res.status(401).json({ email:'Email not found' ,emailnotfound:true } );
+                        res.status(401).json({ email: ['Email not found'], emailnotfound: true });
+                        // res.status(401).json({ email:'Email not found' ,emailnotfound:true } );
                     }
                 }
             });
@@ -115,16 +115,17 @@ module.exports = {
         });
     },
     user: function (req, res, next) {
-        userModel.findById(req.params.userId, function (err, userInfo) {
+        console.log(req)
+        userModel.findById(req.user.id, function (err, userInfo) {
             if (err) {
                 next(err);
             } else {
                 res.json({
-                    status: "success", message: "User found!!!", data: {
-                        id: userInfo._id,
-                        name: userInfo.name,
-                        email: userInfo.email
-                    }
+                    id: userInfo._id,
+                    firstName: userInfo.firstName,
+                    lastName: userInfo.lastName,
+
+                    email: userInfo.email
                 });
             }
         });
@@ -136,6 +137,23 @@ module.exports = {
             } else {
                 scopeModel.findOneAndRemove({ userID: req.params.userId }, (err, scopeInfo) => {
                     res.json({ status: "success", message: "The user account deleted successfully!!!", data: null });
+                })
+            }
+        })
+    },
+    editUser: (req, res, next) => {
+        userModel.findByIdAndUpdate( req.user.id , {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email
+        }, { new: true }, (error,editedData) => {
+            if (error)
+                next(error)
+            else {
+                res.status(200).json({
+                    firstName: editedData.firstName,
+                    lastName: editedData.lastName,
+                    email: editedData.email
                 })
             }
         })

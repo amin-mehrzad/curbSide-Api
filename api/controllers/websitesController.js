@@ -2,16 +2,13 @@ const websiteModel = require('../models/websitesModel');
 const userModel = require('../models/usersModel');
 module.exports = {
     getById: function (req, res, next) {
-        if (req.user.websiteID == req.params.websiteId) {
-            websiteModel.findById(req.params.websiteId, function (err, websiteInfo) {
+            websiteModel.findById(req.user.websiteID, function (err, websiteInfo) {
                 if (err)
                     next(err);
                 else
-                    res.json({ status: "success", message: "Website found!!!", data: { websites: websiteInfo } });
+                    res.json( websiteInfo );
             });
-        } else {
-            res.json({ status: "error", message: "Access Denied! You don't have access to change information of this website ", data: null });
-        }
+
     },
     getAll: function (req, res, next) {
             let websitesList = [];
@@ -38,26 +35,23 @@ module.exports = {
 
     },
     updateById: function (req, res, next) {
-        if (req.user.websiteID == req.params.websiteId) {
-            websiteModel.findByIdAndUpdate(req.params.websiteId, {
-                websiteID: req.body.websiteID,
-                websiteName: req.body.websiteName,
-                logoURL: req.body.logoURL,
-                websitePlatform: req.body.websitePlatform,
-                websiteEmail: req.body.websiteEmail,
-                websiteEmailPassword: req.body.websiteEmailPassword,
-                websiteEmailService: req.body.websiteEmailService,
-                websiteURL: req.body.websiteURL
-            }, function (err, websiteInfo) {
+            websiteModel.findByIdAndUpdate(req.user.websiteID, {
+                //websiteID: req.body.websiteID,
+                businessName: req.body.businessName,
+               // logoURL: req.body.logoURL,
+               businessPhone: req.body.businessPhone,
+               businessEmail: req.body.businessEmail,
+               businessAddress: req.body.businessAddress,
+               country: req.body.country,
+               state: req.body.state,
+               phone: req.body.phone
+            },{new:true}, function (err, websiteInfo) {
                 if (err)
                     next(err);
                 else
-                    res.json({ status: "success", message: "Website updated successfully!!!", data: null });
+                    res.json(websiteInfo);
             });
-        } else {
-            res.json({ status: "error", message: "Access Denied! You don't have access to change information of this website ", data: null });
 
-        }
     },
     deleteById: function (req, res, next) {
         if (req.user.websiteID == req.params.websiteId) {
