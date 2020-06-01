@@ -12,20 +12,17 @@ const WebsiteSchema = new Schema({
     trim: true,
     //   required: true,
   },
-  logoURL: {
+  businessLogoUrl: {
     type: String,
     trim: true,
-    //  required: true,
-  },
+},
   websitePlatform: {
     type: String,
     trim: true,
-    //  required: true,
   },
   websiteEmail: {
     type: String,
     trim: true,
-    //  required: true,
   },
   websiteFromEmail: {
     type: String,
@@ -34,13 +31,10 @@ const WebsiteSchema = new Schema({
   },
   phone: {
     type: Number,
-   // trim: true,
-    //  required: true,
+
   },
   state: {
     type: String,
-   // trim: true,
-    //   required: true
   },
   country: {
     type: String,

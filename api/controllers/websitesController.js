@@ -1,5 +1,5 @@
 const websiteModel = require('../models/websitesModel');
-const userModel = require('../models/usersModel');
+//const userModel = require('../models/usersModel');
 module.exports = {
     getById: function (req, res, next) {
             websiteModel.findById(req.user.websiteID, function (err, websiteInfo) {
@@ -38,7 +38,7 @@ module.exports = {
             websiteModel.findByIdAndUpdate(req.user.websiteID, {
                 //websiteID: req.body.websiteID,
                 businessName: req.body.businessName,
-               // logoURL: req.body.logoURL,
+               businessLogoUrl: req.body.logoURL,
                businessPhone: req.body.businessPhone,
                businessEmail: req.body.businessEmail,
                businessAddress: req.body.businessAddress,
@@ -66,24 +66,15 @@ module.exports = {
 
         }
     },
-    create: function (req, res, next) {
-        console.log(req.body)
-        websiteModel.findByIdAndUpdate({ _id: req.user.websiteID }, {
-            // id: req.body._id,
-            websiteID: req.body.websiteID,
-            websiteName: req.body.websiteName,
-            logoURL: req.body.logoURL,
-            websitePlatform: req.body.websitePlatform,
-            websiteEmail: req.body.websiteEmail,
-            websiteEmailPassword: req.body.websiteEmailPassword,
-            websiteEmailService: req.body.websiteEmailService,
-            websiteURL: req.body.websiteURL
-        }, function (err, result) {
+    uploadImage: function (req, res, next) {
+        console.log(req)
+        websiteModel.findByIdAndUpdate( req.user.websiteID
+        , {businessLogoUrl:req.file.filename}, { new: true },
+         function (err, result) {
             if (err)
                 next(err);
             else
-             //   console.log(req);
-            res.json({ status: "success", message: "Website added successfully!!!", data: result });
+                res.json( result );
         });
     }
 }
