@@ -16,12 +16,12 @@ var cors = require('cors')
 const passport = require("passport");
 
 app.use('/API', cors())
-// app.use(function(req, res, next) {
-//     console.log('sldflskhlksj')
-//   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
+app.use(function(req, res, next) {
+    console.log('sldflskhlksj')
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 //set "uploads" folder for serving static files
 //app.use(express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads', express.static('uploads'));

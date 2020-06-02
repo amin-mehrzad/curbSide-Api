@@ -51,7 +51,7 @@ module.exports = {
                                 permissions: userInfo.websiteID.scopeID.permissions,
                                 websiteID: userInfo.websiteID._id
                             }, req.app.get('refreshTokenSecretKey'), { expiresIn: 8640000 });
-                            res.json({ status: "success", message: "user found!!!", data: { user: userInfo.email, token: token, refreshToken: refreshToken } });
+                            res.json({ status: "success", message: "user found!!!", data: { user: userInfo.email, firstName: userInfo.firstName, lastName: userInfo.lastName, token: token, refreshToken: refreshToken } });
                         } else {
                             res.status(401).json({ passwordincorrect: true, password: ['Password not found'] });
                             // res.status(401).json({ passwordincorrect:true ,password:'Password not found'});
