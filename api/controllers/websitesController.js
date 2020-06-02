@@ -21,7 +21,7 @@ module.exports = {
                             id: website._id,
                             websiteID: website.websiteID,
                             websiteName: website.websiteName,
-                            logoURL: website.logoURL,
+                            logoURL: website.businessLogoUrl,
                             websitePlatform: website.websitePlatform,
                             websiteEmail: website.websiteEmail,
                             websiteEmailPassword: website.websiteEmailPassword,
@@ -35,10 +35,10 @@ module.exports = {
 
     },
     updateById: function (req, res, next) {
-            websiteModel.findByIdAndUpdate(req.user.websiteID, {
+            websiteModel.findOneAndUpdate({_id:req.user.websiteID}, {
                 //websiteID: req.body.websiteID,
                 businessName: req.body.businessName,
-               businessLogoUrl: req.body.logoURL,
+              // businessLogoUrl: req.body.logoURL,
                businessPhone: req.body.businessPhone,
                businessEmail: req.body.businessEmail,
                businessAddress: req.body.businessAddress,
