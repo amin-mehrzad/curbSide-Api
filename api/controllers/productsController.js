@@ -41,7 +41,7 @@ module.exports = {
                 if (err)
                     next(err);
                 else
-                    res.json({ status: "success", message: "Review list found!!!", data: products });
+                    res.status(200).json({ status: "success", message: "Review list found!!!", data: products });
             }
         )
     },

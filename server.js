@@ -11,9 +11,21 @@ const port = process.env.PORT;
 const secretKey = process.env.SECRET_KEY;
 const refreshSecretKey = process.env.REFRESH_SECRET_KEY;
 
+
+const http = require("http");
+const socketIo = require("socket.io");
+
+
+
 var cors = require('cors')
 
 const passport = require("passport");
+
+
+const server = http.createServer(app);
+const io = socketIo(server);
+
+
 
 app.use('/API', cors())
 app.use(function(req, res, next) {
@@ -56,6 +68,7 @@ const users = require('./routes/usersRoute');
 const customers = require('./routes/customersRoute');
 const products = require('./routes/productsRoute');
 const categories = require('./routes/categoriesRoute');
+const orders = require('./routes/ordersRoute');
 const websites = require('./routes/websitesRoute');
 
 
@@ -90,6 +103,7 @@ app.use('/API/scopes', scopes);
 app.use('/API/customers', customers);
 app.use('/API/products', products);
 app.use('/API/categories', categories);
+app.use('/API/orders', orders);
 app.use('/API/websites', websites);
 
 
@@ -110,6 +124,26 @@ app.use('/API/websites', websites);
 // });
 
 
+let interval;
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+  if (interval) {
+    clearInterval(interval);
+  }
+  interval = setInterval(() => getApiAndEmit(socket), 1000);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+    clearInterval(interval);
+  });
+});
+
+
+const getApiAndEmit = socket => {
+  const response = new Date();
+  // Emitting a new message. Will be consumed by the client
+  socket.emit("FromAPI", response);
+};
 
 // handle errors
 app.use(function (err, req, res, next) {
@@ -132,6 +166,6 @@ app.use(function (err, req, res, next) {
 
 
 
-app.listen(port, function () {
+server.listen(port, function () {
   console.log(`Node server listening on port ${port}`);
 });
