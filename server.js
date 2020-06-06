@@ -27,6 +27,37 @@ const io = socketIo(server);
 
 
 
+
+// let interval;
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+  // if (interval) {
+  //   clearInterval(interval);
+  // }
+  // interval = setInterval(() => getApiAndEmit(socket), 1000);
+  // socket.on("disconnect", () => {
+  //   console.log("Client disconnected");
+  //   clearInterval(interval);
+  // });
+});
+
+
+// const getApiAndEmit = socket => {
+//   const response = new Date();
+//   // Emitting a new message. Will be consumed by the client
+//   socket.emit("FromAPI", response);
+// };
+
+
+// Make io accessible to our router
+app.use(function(req,res,next){
+  req.io = io;
+  next();
+});
+
+
+// Set CORS policy
 app.use('/API', cors())
 app.use(function(req, res, next) {
     console.log('sldflskhlksj')
@@ -34,6 +65,7 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+
 //set "uploads" folder for serving static files
 //app.use(express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads', express.static('uploads'));
@@ -124,26 +156,7 @@ app.use('/API/websites', websites);
 // });
 
 
-let interval;
 
-io.on("connection", (socket) => {
-  console.log("New client connected");
-  if (interval) {
-    clearInterval(interval);
-  }
-  interval = setInterval(() => getApiAndEmit(socket), 1000);
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-    clearInterval(interval);
-  });
-});
-
-
-const getApiAndEmit = socket => {
-  const response = new Date();
-  // Emitting a new message. Will be consumed by the client
-  socket.emit("FromAPI", response);
-};
 
 // handle errors
 app.use(function (err, req, res, next) {

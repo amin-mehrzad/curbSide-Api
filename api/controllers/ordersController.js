@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 
 module.exports = {
     getById: function (req, res, next) {
-        console.log(req.body);
+      //  console.log(req.io.sockets.emit('FromAPI'));
         OrderModel.findById(req.params.orderId, function (err, OrderInfo) {
             if (err)
                 next(err);
@@ -58,11 +58,11 @@ module.exports = {
     },
     updateById: function (req, res, next) {
 
-        cModel = req.body
+        oModel = req.body
         OrderModel.findOneAndUpdate({
             _id: req.params.orderId,
             websiteID: req.user.websiteID
-        }, cModel, { new: true }, function (err, result) {
+        }, oModel, { new: true }, function (err, result) {
             if (err)
                 next(err);
             else
@@ -85,8 +85,11 @@ module.exports = {
         OrderModel.create(oModel, function (err, result) {
             if (err)
                 next(err);
-            else
-                res.json({ result }).status(200);
+            else{
+                
+                req.io.sockets.emit('NewOrder',result)
+                res.json({result}).status(200);
+            }
         });
     },
 }
