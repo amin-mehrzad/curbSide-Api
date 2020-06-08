@@ -43,10 +43,16 @@ module.exports = {
                         customerEmail: 1,
                         orderInstructions: 1,
                         orderPaymentInstructions: 1,
+                        orderCreatedTime:1,
                         websiteID: 1
 
                     }
-                }
+                },
+                {
+                    $sort: {
+                        orderCreatedTime: -1,
+                    }
+                },
 
             ], function (err, categories) {
                 if (err)
@@ -80,7 +86,8 @@ module.exports = {
     create: function (req, res, next) {
         
         var oModel=req.body
-        oModel={...oModel,websiteID: req.user.websiteID}
+        var orderCreatedTime = new Date()
+        oModel={...oModel,websiteID: req.user.websiteID, orderCreatedTime: orderCreatedTime}
         console.log(oModel)
         OrderModel.create(oModel, function (err, result) {
             if (err)

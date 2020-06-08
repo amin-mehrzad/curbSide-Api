@@ -36,6 +36,7 @@ const OrderSchema = new Schema({
     customerEmail: { type: String },
     orderInstructions: { type: String },
     orderPaymentInstructions: { type: String },
+    orderCreatedTime: { type: Date },
     websiteID: {
         type: Schema.Types.ObjectId,
         ref: 'Website'
