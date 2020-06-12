@@ -9,26 +9,38 @@ module.exports = {
     create: function (req, res, next) {
         console.log(req.body)
         encryptedPass = bcrypt.hashSync(req.body.password, saltRounds);
-        userModel.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email, password: encryptedPass }, function (err, result) {
-            if (err)
+        userModel.find({ email: req.body.email }, (userErr, document) => {
+            if (userErr)
                 next(err);
-            else {
-                console.log(result._id)
-                // scopeModel.create({ userID: result._id, permissions: ["users:read", "products:read", "scopes:read", "users:write", "products:write", "scopes:write"] }, function (error, doc) {
-                scopeModel.create({ userID: result._id, permissions: ["admin"] }, function (error, doc) {
-                    if (error)
-                        next(error);
+            else if (document.length == 0) {
+                console.log('sdgfdfs', document)
+                userModel.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email, password: encryptedPass }, function (err, result) {
+                    // TODO : check email if exist or not 
+                    if (err)
+                        next(err);
                     else {
-                        websiteModel.create({ scopeID: doc._id }, (websiteError, websiteDoc) => {
-                            result.websiteID = websiteDoc._id;
-                            result.save();
-                        })
+                        console.log(result._id)
+                        // scopeModel.create({ userID: result._id, permissions: ["users:read", "products:read", "scopes:read", "users:write", "products:write", "scopes:write"] }, function (error, doc) {
+                        scopeModel.create({ userID: result._id, permissions: ["admin"] }, function (error, doc) {
+                            if (error)
+                                next(error);
+                            else {
+                                websiteModel.create({ scopeID: doc._id }, (websiteError, websiteDoc) => {
+                                    result.websiteID = websiteDoc._id;
+                                    result.save();
+                                })
+                            }
+                        });
+                        res.json({ status: "success", message: "User added successfully!!!", data: null });
                     }
                 });
-                res.json({ status: "success", message: "User added successfully!!!", data: null });
+            } else {
+                res.status(401).json({email: ['The email address you have entered is already registered'], emailnotfound: true});
             }
-        });
-    },
+        })
+
+    }
+    ,
     authenticate: function (req, res, next) {
         //  console.log(req);
 
@@ -142,11 +154,11 @@ module.exports = {
         })
     },
     editUser: (req, res, next) => {
-        userModel.findByIdAndUpdate( req.user.id , {
+        userModel.findByIdAndUpdate(req.user.id, {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email
-        }, { new: true }, (error,editedData) => {
+        }, { new: true }, (error, editedData) => {
             if (error)
                 next(error)
             else {
