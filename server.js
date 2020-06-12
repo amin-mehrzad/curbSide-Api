@@ -96,6 +96,7 @@ app.set('view engine', 'ejs')
 
 const scopes = require('./routes/scopesRoute');
 const users = require('./routes/usersRoute');
+const adminUsers = require('./routes/adminUsersRoute');
 const customers = require('./routes/customersRoute');
 const products = require('./routes/productsRoute');
 const categories = require('./routes/categoriesRoute');
@@ -129,7 +130,8 @@ app.use('/API', passport.authenticate('jwt', { session: false }))
 
 
 // private route
-app.use('/API/users', users);
+//app.use('/API/users', users);
+app.use('/API/adminUsers', adminUsers);
 app.use('/API/scopes', scopes);
 app.use('/API/customers', customers);
 app.use('/API/products', products);
