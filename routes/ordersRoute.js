@@ -4,9 +4,9 @@ const orderController = require('../api/controllers/ordersController');
 var permission = require('express-jwt-permissions')();
 
 
-router.get('/',  permission.check([['orders:read'],['admin']]), orderController.getAll);
-router.post('/', permission.check([['orders:read', 'orders:write'],['admin']]), orderController.create);
-router.get('/:orderId',  permission.check([['orders:read'],['admin']]), orderController.getById);
-router.put('/:orderId', permission.check([['orders:read', 'orders:write'],['admin']]), orderController.updateById);
-router.delete('/:orderId', permission.check([['orders:read', 'orders:write'],['admin']]), orderController.deleteById);
+router.get('/',  permission.check([['orders:read'],['admin'],['user']]), orderController.getAll);
+router.post('/', permission.check([['orders:read', 'orders:write'],['admin'],['user']]), orderController.create);
+router.get('/:orderId',  permission.check([['orders:read'],['admin'],['user']]), orderController.getById);
+router.put('/:orderId', permission.check([['orders:read', 'orders:write'],['admin'],['user']]), orderController.updateById);
+router.delete('/:orderId', permission.check([['orders:read', 'orders:write'],['admin'],['user']]), orderController.deleteById);
 module.exports = router;

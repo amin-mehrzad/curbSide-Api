@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const userModel = require('../models/usersModel');
 //const refreshTokenModel = require('../models/refreshTokens');
 const scopeModel = require('../models/scopesModel');
@@ -7,123 +8,104 @@ const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 module.exports = {
     create: function (req, res, next) {
-        console.log(req.body)
-        encryptedPass = bcrypt.hashSync(req.body.password, saltRounds);
+        //console.log('09090909090909', req.body)
+        var encryptedPass = bcrypt.hashSync(req.body.password, saltRounds);
         userModel.find({ email: req.body.email }, (userErr, document) => {
             if (userErr)
-                next(err);
+                next(userErr);
             else if (document.length == 0) {
-                // console.log('sdgfdfs', document)
-                userModel.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email, password: encryptedPass }, function (err, result) {
+                //  console.log('sdgfdfs', document)
+                userModel.create({ firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email, password: encryptedPass }, function (err, userResult) {
                     if (err)
                         next(err);
                     else {
-                        console.log(result._id)
-                        // scopeModel.create({ userID: result._id, permissions: ["users:read", "products:read", "scopes:read", "users:write", "products:write", "scopes:write"] }, function (error, doc) {
-                        scopeModel.create({ userID: result._id, permissions: ["admin"] }, function (error, doc) {
+                        console.log(userResult._id)
+                        // scopeModel.create({ userID: userResult._id, permissions: ["users:read", "products:read", "scopes:read", "users:write", "products:write", "scopes:write"] }, function (error, scopeResult) {
+                        scopeModel.create({ userID: userResult._id, permissions: [`${req.body.permissions}`] }, function (error, scopeResult) {
                             if (error)
                                 next(error);
                             else {
-                                websiteModel.create({ scopeID: doc._id }, (websiteError, websiteDoc) => {
-                                    result.websiteID = websiteDoc._id;
-                                    result.save();
-                                })
+                                //    websiteModel.create({ scopeID: scopeResult._id }, (websiteError, websiteDoc) => {
+                                userResult.websiteID = req.user.websiteID;
+                                userResult.scopeID = scopeResult._id;
+                                userResult.save();
+                                //  })
+                                //console.log('kkkkkkkkkkkkkkkkkkkkkkkkkk',scopeResult)
+
                             }
                         });
-                        res.json({ status: "success", message: "User added successfully!!!", data: null });
+                        res.json({ status: "success", message: "User added successfully!!!", data: req.body });
                     }
                 });
             } else {
-                res.status(401).json({email: ['The email address you have entered is already registered'], emailnotfound: true});
+                res.status(401).json({ email: ['The email address you have entered is already registered'], emailnotfound: true });
             }
         })
 
-    }
-    ,
-    authenticate: function (req, res, next) {
-        //  console.log(req);
-
-        userModel.findOne({ email: new RegExp(`^${req.body.email}$`, 'i') })
-            .populate({ path: 'websiteID', populate: { path: 'scopeID', model: 'Scopes' } })
-            .exec(function (joinErr, userInfo) {
-                if (joinErr) {
-                    next(joinErr);
-                } else {
-                    if (userInfo != null) {
-                        if (bcrypt.compareSync(req.body.password, userInfo.password)) {
-                            console.log(userInfo);
-                            const token = jwt.sign({
-                                id: userInfo._id,
-                                permissions: userInfo.websiteID.scopeID.permissions,
-                                websiteID: userInfo.websiteID._id
-                            }, req.app.get('secretKey'), { expiresIn: 8640000 });
-                            const refreshToken = jwt.sign({
-                                id: userInfo._id,
-                                permissions: userInfo.websiteID.scopeID.permissions,
-                                websiteID: userInfo.websiteID._id
-                            }, req.app.get('refreshTokenSecretKey'), { expiresIn: 8640000 });
-                            res.json({ status: "success", message: "user found!!!", data: { user: userInfo.email, firstName: userInfo.firstName, lastName: userInfo.lastName, token: token, refreshToken: refreshToken } });
-                        } else {
-                            res.status(401).json({ passwordincorrect: true, password: ['Password not found'] });
-                            // res.status(401).json({ passwordincorrect:true ,password:'Password not found'});
-                        }
-                    } else {
-                        res.status(401).json({ email: ['Email not found'], emailnotfound: true });
-                        // res.status(401).json({ email:'Email not found' ,emailnotfound:true } );
-                    }
-                }
-            });
-    },
-    refreshToken: function (req, res, next) {
-        // userModel.findOne({ 'tokens.refreshToken' : req.body.refreshToken }, function (err, tokenInfo) {
-        //    userModel.findOne({ refreshTokens: req.body.refreshToken}  , function (err, tokenInfo) {
-        console.log(req.body)
-        //   if (err) { next(err); }
-        // if (tokenInfo) {
-        jwt.verify(req.body.refreshToken, req.app.get('refreshTokenSecretKey'), function (err, decoded) {
-            if (err) {
-                res.json({ status: "error", message: err.message, data: null });
-            } else {
-                // refreshTokenModel.insert({ refreshTokens: req.body.refreshToken})
-                // add user id to request
-                // req.body.userId = decoded.id;
-                // const expireDate = Date(0);
-                //   expireDate.setUTCSeconds(token.data.exp);
-                // const date = new Date(0);
-
-                //console.log(date.setUTCSeconds(decoded.exp))
-                //  console.log(date.setUTCSeconds(decoded.iat))
-                console.log(new Date(decoded.exp * 1000))
-                console.log(new Date(decoded.iat * 1000))
-                console.log(decoded.permissions)
-                const token = jwt.sign({ id: decoded.id, permissions: decoded.permissions }, req.app.get('secretKey'), { expiresIn: 8640000 });
-                // tokenInfo.tokens.token=token;
-                res.json({ status: "success", message: "token refreshed!!!", data: { token: token } });
-                //   next();
-            }
-        });
-
-        ///    }  else {
-        //  res.json({ status: "error", message: "token is wrong", data: null });
-        //       }
-        //    });
     },
     usersList: function (req, res, next) {
-        let usersList = [];
-        userModel.find({}, function (err, users) {
-            if (err) {
-                next(err);
-            } else {
-                for (let user of users) {
-                    usersList.push({
-                        id: user._id,
-                        name: user.name,
-                        email: user.email
-                    });
+        var websiteID = mongoose.Types.ObjectId(req.user.websiteID);
+
+        userModel.aggregate(
+            [
+                {
+                    $match: {
+                        websiteID: websiteID,
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "websites",
+                        localField: "websiteID",    // field in the users collection
+                        foreignField: "_id",  // field in the websites collection
+                        as: "fromWebsite"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "scopes",
+                        localField: "scopeID",    // field in the users collection
+                        foreignField: "_id",  // field in the scope collection
+                        as: "fromScope"
+                    }
+                },
+                {
+                    $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ["$fromScope", 0] }, { $arrayElemAt: ["$fromWebsite", 0] }, "$$ROOT"] } }
+                },
+                {
+                    $project: {
+                        // _id: 1,
+                        // firstName: 1,
+                        // lastName: 1,
+                        // email: 1,
+
+                        // scopeID: 1,
+                        fromWebsite: 0,
+                        fromScope: 0
+                        //businessLogoUrl:0
+                        // password: 0
+                    }
                 }
-                res.json({ status: "success", message: "Users list found!!!", data: { users: usersList } });
+            ], function (err, users) {
+                if (err)
+                    next(err);
+                else {
+                    console.log('AGG Users---->>>', users)
+                    res.status(200).json({ status: "success", message: "User list found!!!", data: users });
+                }
             }
-        });
+        );
+        // userModel.find({ websiteID: req.user.websiteID })
+        // .populate('scopeID')
+        // .exec( (err, userList) => {
+        //     if (err)
+        //         next(err);
+        //     else {
+        //         userList= {...userList, permissions: userList.scopeID.permissions}
+        //         res.status(200).json({ status: "success", message: "User list found!!!", data: userList });
+        //     }
+        // })
+
     },
     user: function (req, res, next) {
         console.log(req)
@@ -153,7 +135,7 @@ module.exports = {
         })
     },
     editUser: (req, res, next) => {
-        userModel.findByIdAndUpdate(req.user.id, {
+        userModel.findByIdAndUpdate(req.params.userId, {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email
@@ -161,35 +143,14 @@ module.exports = {
             if (error)
                 next(error)
             else {
-                res.status(200).json({
-                    firstName: editedData.firstName,
-                    lastName: editedData.lastName,
-                    email: editedData.email
+               // console.log('dgdfgd',editedData)
+                scopeModel.findOneAndUpdate({ userID: req.params.userId },{permissions: req.body.permissions}, (err, scopeInfo) => {
+                    res.status(200).json(req.body)
                 })
+
             }
         })
+
     }
-    // permission: function (req,res,next) {
-    //     console.log(req)
 
-    //    // let permissionsList = [];
-    //     // scopeModel.find({}, function (err, permissions) {
-    //     //     if (err) {
-    //     //         next(err);
-    //     //     } else {
-    //     //         for (let userPermission of permissions) {
-
-    //     //             permissionsList.push({
-    //     //                 id: userPermission._id,
-    //     //                 userID: userPermission.userID,
-    //     //               //  permissions: userPermission.permissions
-    //     //             });
-    //     //         }
-    //     //         res.json({ status: "success", message: "User permission list found!!!", data: { permissions: permissionsList } });
-    //     //     }
-    //     // });
-    // },
-    // test: function (req, res, next) {
-    // console.log(req.params)
-    // }
 }

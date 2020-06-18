@@ -12,4 +12,4 @@ const ScopesSchema = new Schema({
         required: true
     }
 });
-module.exports = mongoose.model('Scopes', ScopesSchema);
+module.exports = mongoose.model('Scope', ScopesSchema);

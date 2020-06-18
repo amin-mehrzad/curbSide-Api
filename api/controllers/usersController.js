@@ -26,6 +26,7 @@ module.exports = {
                             else {
                                 websiteModel.create({ scopeID: doc._id }, (websiteError, websiteDoc) => {
                                     result.websiteID = websiteDoc._id;
+                                    result.scopeID = doc._id;
                                     result.save();
                                 })
                             }
@@ -34,7 +35,7 @@ module.exports = {
                     }
                 });
             } else {
-                res.status(401).json({email: ['The email address you have entered is already registered'], emailnotfound: true});
+                res.status(401).json({ email: ['The email address you have entered is already registered'], emailnotfound: true });
             }
         })
 
@@ -44,7 +45,8 @@ module.exports = {
         //  console.log(req);
 
         userModel.findOne({ email: new RegExp(`^${req.body.email}$`, 'i') })
-            .populate({ path: 'websiteID', populate: { path: 'scopeID', model: 'Scopes' } })
+            .populate({ path: 'websiteID', populate: { path: 'scopeID', model: 'Scope' } })
+            .populate('scopeID')
             .exec(function (joinErr, userInfo) {
                 if (joinErr) {
                     next(joinErr);
@@ -54,12 +56,12 @@ module.exports = {
                             console.log(userInfo);
                             const token = jwt.sign({
                                 id: userInfo._id,
-                                permissions: userInfo.websiteID.scopeID.permissions,
+                                permissions: userInfo.scopeID.permissions,
                                 websiteID: userInfo.websiteID._id
                             }, req.app.get('secretKey'), { expiresIn: 8640000 });
                             const refreshToken = jwt.sign({
                                 id: userInfo._id,
-                                permissions: userInfo.websiteID.scopeID.permissions,
+                                permissions: userInfo.scopeID.permissions,
                                 websiteID: userInfo.websiteID._id
                             }, req.app.get('refreshTokenSecretKey'), { expiresIn: 8640000 });
                             res.json({ status: "success", message: "user found!!!", data: { user: userInfo.email, firstName: userInfo.firstName, lastName: userInfo.lastName, token: token, refreshToken: refreshToken } });

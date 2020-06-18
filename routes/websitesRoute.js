@@ -34,10 +34,10 @@ const upload = multer({
 
 
 // router.get('/',  permission.check([['websites:read'],['admin']]), websiteController.getAll);
-router.post('/', permission.check([['websites:read', 'websites:write'],['admin']]), upload.single('businessLogoUrl'), websiteController.uploadImage);
+router.post('/', permission.check([['websites:read', 'websites:write'],['admin'],['user']]), upload.single('businessLogoUrl'), websiteController.uploadImage);
 // router.get('/:websiteId',  permission.check([['websites:read'],['admin']]), websiteController.getById);
-router.get('/',  permission.check([['websites:read'],['admin']]), websiteController.getById);
+router.get('/',  permission.check([['websites:read'],['admin'],['user']]), websiteController.getById);
 // router.put('/:websiteId', permission.check([['websites:read', 'websites:write'],['admin']]), websiteController.updateById);
-router.put('/', permission.check([['websites:read', 'websites:write'],['admin']]), websiteController.updateById);
-router.delete('/:websiteId', permission.check([['websites:read', 'websites:write'],['admin']]), websiteController.deleteById);
+router.put('/', permission.check([['websites:read', 'websites:write'],['admin'],['user']]), websiteController.updateById);
+router.delete('/:websiteId', permission.check([['websites:read', 'websites:write'],['admin'],['user']]), websiteController.deleteById);
 module.exports = router;

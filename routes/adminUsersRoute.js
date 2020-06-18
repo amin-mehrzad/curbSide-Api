@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../api/controllers/usersController');
+const adminUsersController = require('../api/controllers/adminUsersController');
 var permissions = require('express-jwt-permissions')();
-router.put('/', permissions.check([['users:read','users:write'],['admin']]) , userController.editUser);
-router.get('/', permissions.check([['users:read'],['admin']]) , userController.user);
-router.get('/list', permissions.check( [['users:read'],['admin']]) , userController.user);
-router.delete('/:userId', permissions.check( [['users:read', 'users:write'],['admin']]), userController.deleteUser);
+router.put('/:userId', permissions.check([['users:read','users:write'],['admin'],['user']]) , adminUsersController.editUser);
+router.get('/', permissions.check([['users:read'],['admin'],['user']]) , adminUsersController.usersList);
+router.get('/info', permissions.check([['users:read'],['admin'],['user']]) , adminUsersController.user);
 
-router.post('/register', userController.create);
-router.post('/authenticate', userController.authenticate);
-router.post('/refreshToken', userController.refreshToken);
+router.delete('/:userId', permissions.check( [['users:read', 'users:write'],['admin'],['user']]), adminUsersController.deleteUser);
+router.post('/', permissions.check( [['users:read', 'users:write'],['admin'],['user']]), adminUsersController.create);
+
 module.exports = router;
